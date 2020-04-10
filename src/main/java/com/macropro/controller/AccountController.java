@@ -59,7 +59,7 @@ public class AccountController {
 		return "";
 	}
 	
-	@GetMapping("/")
+	@GetMapping("")
 	public String showHome() {
 		logger.info("Entering home screen.");
 		return "home";
@@ -70,6 +70,12 @@ public class AccountController {
 		logger.info("Entering goals screen.");
 		loadGoalFields(m);
 		return "goals";
+	}
+	
+	@GetMapping("/diary-settings")
+	public String showDiarySettings(Model m) {
+		logger.info("Entering Diary Settings screen.");
+		return "diary-settings";
 	}
 	
 	@GetMapping("/login")

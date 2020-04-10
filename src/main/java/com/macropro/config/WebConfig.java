@@ -23,6 +23,7 @@ import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -36,7 +37,7 @@ public class WebConfig implements WebMvcConfigurer {
 
 	@Autowired
 	private Environment env;
-	
+		
 	@Bean
 	@Scope("prototype")
 	public Logger logger(InjectionPoint injectionPoint) {
@@ -113,6 +114,11 @@ public class WebConfig implements WebMvcConfigurer {
 		HibernateTransactionManager htm = new HibernateTransactionManager();
 		htm.setSessionFactory(sessionFactory);
 		return htm;
+	}
+	
+	@Bean
+	public RequestMappingHandlerMapping useTrailingSlash() {
+	    return new RequestMappingHandlerMapping() {{ setUseTrailingSlashMatch(true); }};
 	}
 	
 	@Override
