@@ -52,6 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/account/addUser").permitAll()
 				//.antMatchers("/account/goals").hasAuthority("USER_GNS")
 				.antMatchers("/account/**").hasAnyAuthority("USER_GNS", "USER_GS")
+				.antMatchers("/food/**").hasAnyAuthority("USER_GS")
 				.anyRequest().authenticated()
 				.and()
 			.formLogin()

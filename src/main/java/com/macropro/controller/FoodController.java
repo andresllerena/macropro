@@ -21,6 +21,25 @@ public class FoodController {
 		
 		@GetMapping("/diary")
 		public String showFoodDiary(Model m) {
-			return "food-diary";
+			logger.info("Entering Food Diary screen.");
+			return "diary";
+		}
+		
+		@GetMapping("/search-foods")
+		public String showSearchFoods(Model m) {
+			logger.info("Entering Search Foods screen.");
+			return "search-foods";
+		}
+		
+		@GetMapping("/my-foods")
+		public String showMyFoods(Model m) {
+			logger.info("Entering My Foods screen.");
+			return "my-foods";
+		}
+		
+		@GetMapping("/my-meals")
+		public String showMyMeals(Model m) {
+			logger.info("Entering My Meals screen.");
+			return "my-meals";
 		}
 }

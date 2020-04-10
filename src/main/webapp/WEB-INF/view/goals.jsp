@@ -42,8 +42,8 @@
 	<nav class="navbar navbar-expand-md topbar">
 		<div class="container-fluid">
 			<ul class="navbar-nav mx-auto">
-				<li id="myhome" class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/account/">My Home</a></li>
-				<li id="food" class="nav-item"><a class="nav-link" href="#">Food</a></li>
+				<li id="account" class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/account/">My Home</a></li>
+				<li id="food" class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/food/diary">Food</a></li>
 				<li id="about" class="nav-item"><a class="nav-link" href="#">About</a></li>
 				<li id="contactus" class="nav-item"><a class="nav-link" href="#">Contact Us</a></li>
 			</ul>
