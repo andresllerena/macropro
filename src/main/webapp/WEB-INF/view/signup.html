@@ -1,17 +1,13 @@
-<%@ page contentType="text/html;charset=ISO-8859-1" isELIgnored="false" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
-<c:set var="root" value="${pageContext.request.contextPath}"/>
-
 <!DOCTYPE html>
 <html>
-<head>
+<html lang="en" xmlns:th="https://thymeleaf.org">
 	<title>MacroPro | Create Account</title>
 	
 	<style>
 		.error {
-			color: red
+			color: red;
+			left: 20px;
+			position: relative;
 		}
 		.horizontal-center{
 		  	display: table;
@@ -19,16 +15,16 @@
 		}
 	</style>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-	<link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet" >	
+	<link th:href="@{/resources/css/style.css}" rel="stylesheet" >	
 </head>
 
 <body>
 	<div id="mp-header">
-		<div id="mp-logo" class="horizontal-center"><a href="${pageContext.request.contextPath}/" ><img src="${pageContext.request.contextPath}/resources/images/logo.jpg" width="200" height="120" /></a></div>
+		<div id="mp-logo" class="horizontal-center"><a th:href="@{/}" ><img th:src="@{/resources/images/logo.jpg}" width="200" height="120" /></a></div>
 		<div id="links" class="horizontal-center">
 			<p style='padding-top: 20px'>
-		    	<a class="welcome-link" href="${pageContext.request.contextPath}/account/login">Log In</a> &nbsp;&nbsp;|&nbsp;&nbsp;
-		    	<a class="welcome-link" href="${pageContext.request.contextPath}/account/signup">Sign Up</a>
+		    	<a class="welcome-link" th:href="@{/account/login}">Log In</a> &nbsp;&nbsp;|&nbsp;&nbsp;
+		    	<a class="welcome-link" th:href="@{/account/signup}">Sign Up</a>
 	    	</p>
 	    </div>
 	</div>
@@ -48,52 +44,52 @@
 	</div>
 	<br>
 	<div class="horizontal-center">
-		<form:form action="${root}/account/addUser" modelAttribute="user" method="POST">
+		<form th:action="@{/account/addUser}" th:object="${user}" method="POST">
 			<table>
 				<tbody>
 					<tr>
 						<td><label>Username*:</label></td>
-						<td>&emsp;<form:input path="username" /></td>
-						<c:if test="${username_exists != null}"><td>&emsp;<font color="red">${username_exists}</font></td></c:if>
-						<td>&emsp;<form:errors path="username" cssClass="error" /></td>
+						<td>&emsp;<input type="text" th:field="*{username}"/></td>
+						<td th:if="${username_exists != null}" th:text="${username_exists}" class="error"></td>
+						<td th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="error" /></td>
 					</tr>
 					<tr>
 						<td><label>Password*:</label></td>
-						<td>&emsp;<form:password path="password" /></td>
-						<c:if test="${password_mismatch != null}"><td>&emsp;<font color="red">${password_mismatch}</font></td></c:if>
-						<td>&emsp;<form:errors path="password" cssClass="error" /></td>
+						<td>&emsp;<input type="password" th:field="*{password}"/></td>
+						<td th:if="${password_mismatch != null}" th:text="${password_mismatch}" class="error"></td>
+						<td th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error" /></td>
 					</tr>
 					<tr>
 						<td><label>Confirm Password*:</label></td>
-						<td>&emsp;<form:password path="matchingPassword" /></td>
-						<td>&emsp;<form:errors path="matchingPassword" cssClass="error" /></td>
+						<td>&emsp;<input type="password" th:field="*{matchingPassword}"/></td>
+						<td th:if="${#fields.hasErrors('matchingPassword')}" th:errors="*{matchingPassword}" class="error" /></td>
 					</tr>
 					<tr>
 						<td><label>First Name*:</label></td>
-						<td>&emsp;<form:input path="firstName" /></td>
-						<td>&emsp;<form:errors path="firstName" cssClass="error" /></td>
+						<td>&emsp;<input type="text" th:field="*{firstName}" /></td>
+						<td th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="error" /></td>
 					</tr>
 					<tr>
 						<td><label>Last Name*:</label></td>
-						<td>&emsp;<form:input path="lastName" /></td>
-						<td>&emsp;<form:errors path="lastName" cssClass="error" /></td>
+						<td>&emsp;<input type="text" th:field="*{lastName}" /></td>
+						<td th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="error" /></td>
 					</tr>
 					<tr>
 						<td><label>Email Address*:</label></td>
-						<td>&emsp;<form:input path="email" /></td>
-						<c:if test="${invalid_email != null}"><td>&emsp;<font color="red">${invalid_email}</font></td></c:if>
-						<c:if test="${email_exists != null}"><td>&emsp;<font color="red">${email_exists}</font></td></c:if>
-						<td>&emsp;<form:errors path="email" cssClass="error" /></td>
+						<td>&emsp;<input type="text" th:field="*{email}" /></td>
+						<td th:if="${invalid_email != null}" th:text="${invalid_email}" class="error"></td>
+						<td th:if="${email_exists != null}" th:text="${email_exists}" class="error"></td>
+						<td th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error" /></td>
 					</tr>
 					<tr>
 						<td><label>Phone Number:</label></td>
-						<td>&emsp;<form:input path="phoneNumber" /></td>
-						<td>&emsp;<form:errors path="phoneNumber" cssClass="error" /></td>
+						<td>&emsp;<input type="text" th:field="*{phoneNumber}" /></td>
+						<td th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="error" /></td>
 					</tr>
 					<tr>
 						<td><label>Country:</label></td>
-						<td>&emsp;<form:input path="country" /></td>
-						<td>&emsp;<form:errors path="country" cssClass="error" /></td>
+						<td>&emsp;<input type="text" th:field="*{country}" /></td>
+						<td th:if="${#fields.hasErrors('country')}" th:errors="*{country}" class="error" /></td>
 					</tr>
 				</tbody>
 			</table>
@@ -102,7 +98,7 @@
 			<div class="horizontal-center">
 				<input type="submit" value="Submit" />
 			</div>
-		</form:form>
+		</form>
 	</div>
 	<br>
 	<div class="horizontal-center">

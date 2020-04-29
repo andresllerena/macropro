@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://thymeleaf.org">
+<head>
+	<title>MacroPro | Getting your nutrition in check!</title>
+	<style>
+		.horizontal-center{
+		  	display: table;
+		  	margin: 0 auto;
+		}
+		.diary-container {
+			margin-top: 2%;
+    		position: relative;
+			left: 9.5%;
+		}
+		.meal-header {
+			font-weight: bold;
+		}
+		.first {
+			width: 50%;
+		}
+		.nutrient-column {
+			width: 12%;
+			text-align:center;
+			background-color: #ec312a;
+			border: 1px solid black;
+			color: white;
+		}
+		.delete {
+			width: 2%;
+		}
+		.add-food {
+		}
+		.diary-item {
+			padding-left: 20px;
+		}
+		.nutrient {
+			text-align: center;
+			border-left: 1pt solid white;
+			border-right: 1pt solid white;
+		}
+		.diary-row {
+			font-size: 11px;
+			background-color: #f8f8f8;
+			border-bottom: 1pt solid #ececec;
+		}
+		.last-row-tr {
+		}
+		.last-row-td {
+			font-size: 11px;
+			padding: 7.5px;
+			padding-left: 20px;
+			border-bottom: 1pt solid black;
+		}
+		.remove-btn {
+			background-color: Transparent;
+    		border: none;
+		}
+	</style>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link th:href="@{/resources/css/style.css}" rel="stylesheet" >
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script th:src="@{/resources/js/toolbar.js}"></script>
+</head>
+<body>
+		<div id="mp-header">
+			<div id="mp-logo" class="horizontal-center"><img th:src="@{/resources/images/logo.jpg}" width="200" height="120" /></div>
+			<br>
+		</div>	
+		
+		<nav class="navbar navbar-expand-md topbar">
+			<div class="container-fluid">
+				<ul class="navbar-nav mx-auto">
+					<li id="account" class="nav-item"><a class="nav-link" th:href="@{/account}">My Home</a></li>
+					<li id="food" class="nav-item"><a class="nav-link" th:href="@{/food/diary}">Food</a></li>
+					<li id="about" class="nav-item"><a class="nav-link" href="#">About</a></li>
+					<li id="contactus" class="nav-item"><a class="nav-link" href="#">Contact Us</a></li>
+				</ul>
+			</div>
+		</nav>
+		
+		<nav class="navbar navbar-expand-md subbar">
+			<div class="container-fluid">
+				<ul class="navbar-nav mx-auto">
+					<li id="diary" class="nav-item"><a class="nav-link" th:href="@{/food/diary}">Food Diary</a></li>
+					<li id="search-foods" class="nav-item"><a class="nav-link" th:href="@{/food/search-foods}">Database</a></li>
+					<li id="my-foods" class="nav-item"><a class="nav-link" th:href="@{/food/my-foods}">My Foods</a></li>
+					<li id="my-meals" class="nav-item"><a class="nav-link" th:href="@{/food/my-meals}">My Meals</a></li>
+				</ul>
+			</div>
+		</nav>
+		
+		<div class="diary-container container">
+			<form th:action="@{/food/diary/remove-food}" method="POST" >
+			<input type="hidden" name="meal" th:value="0">
+			<input type="hidden" name="date" th:value="${log.date}">
+			
+			<table style="width: 70%;" >
+				<tbody>
+					<tr class="meal-header">
+						<td class="first">Breakfast</td>
+						<td class="nutrient-column">Calories</td>
+						<td class="nutrient-column">Carbs<br>(g)</td>
+						<td class="nutrient-column">Fat<br>(g)</td>
+						<td class="nutrient-column">Protein<br>(g)</td>
+						<td class="delete"></td>
+					</tr>
+					<th:block th:each="item, i : ${log.breakfast}">
+						<tr class="diary-row">
+							<td class="diary-item" th:text="${item.id} + ${item.food.name}" ></td>
+							<td class="nutrient" th:text="${item.totalCalories}" ></td>
+							<td class="nutrient" th:text="${item.totalCarbsGrams}" ></td>
+							<td class="nutrient" th:text="${item.totalFatGrams}" ></td>
+							<td class="nutrient" th:text="${item.totalProteinGrams}" ></td>
+							<td><button th:id="'breakfast' + ${i.index}" class="remove-btn" type="submit" name="entry_index" th:value="${i.index}"><img th:src="@{/resources/images/delete-btn.png}" width="15" height="15" /></button></td> <!-- th:value="${item.id}" -->
+						</tr>
+					</th:block>
+					<tr class="last-row-tr">
+						<td class="last-row-td"><a class="add-food" th:href="@{/food/diary/add(date=${log.date}, meal=0)}" ><b>Add Food</b></a></td>
+						<td class="last-row-td"></td>
+						<td class="last-row-td"></td>
+						<td class="last-row-td"></td>
+						<td class="last-row-td"></td>
+					</tr>
+					<tr class="meal-header">
+						<td>Lunch</td>
+					</tr>
+					<th:block th:each="item, i : ${log.lunch}">
+						<tr class="diary-row">
+							<td class="diary-item" th:text="${item.id} + ${item.food.name}" ></td>
+							<td class="nutrient" th:text="${item.totalCalories}" ></td>
+							<td class="nutrient" th:text="${item.totalCarbsGrams}" ></td>
+							<td class="nutrient" th:text="${item.totalFatGrams}" ></td>
+							<td class="nutrient" th:text="${item.totalProteinGrams}" ></td>
+							<td><button th:id="'lunch' + ${i.index}" class="remove-btn" type="submit" name="entry_index" th:value="${i.index}"><img th:src="@{/resources/images/delete-btn.png}" width="15" height="15" /></button></td> <!-- th:value="${item.id}" -->
+						</tr>
+					</th:block>
+					<tr class="last-row-tr">
+						<td class="last-row-td"><a class="add-food" th:href="@{/food/diary/add(date=${log.date}, meal=1)}"><b>Add Food</b></a></td>
+						<td class="last-row-td"></td>
+						<td class="last-row-td"></td>
+						<td class="last-row-td"></td>
+						<td class="last-row-td"></td>
+					</tr>
+					<tr class="meal-header">
+						<td>Dinner</td>
+					</tr>
+					<th:block th:each="item, i : ${log.dinner}">
+						<tr class="diary-row">
+							<td class="diary-item" th:text="${item.id} + ${item.food.name}" ></td>
+							<td class="nutrient" th:text="${item.totalCalories}" ></td>
+							<td class="nutrient" th:text="${item.totalCarbsGrams}" ></td>
+							<td class="nutrient" th:text="${item.totalFatGrams}" ></td>
+							<td class="nutrient" th:text="${item.totalProteinGrams}" ></td>
+							<td><button th:id="'dinner' + ${i.index}" class="remove-btn" type="submit" name="entry_index" th:value="${i.index}"><img th:src="@{/resources/images/delete-btn.png}" width="15" height="15" /></button></td> <!-- th:value="${item.id}" -->
+						</tr>
+					</th:block>
+					<tr class="last-row-tr">
+						<td class="last-row-td"><a class="add-food" th:href="@{/food/diary/add(date=${log.date}, meal=2)}"><b>Add Food</b></a></td>
+						<td class="last-row-td"></td>
+						<td class="last-row-td"></td>
+						<td class="last-row-td"></td>
+						<td class="last-row-td"></td>
+					</tr>
+					<tr class="meal-header">
+						<td>Snack 1</td>
+					</tr>
+					<th:block th:each="item, i : ${log.snackOne}">
+						<tr class="diary-row">
+							<td class="diary-item" th:text="${item.id} + ${item.food.name}" ></td>
+							<td class="nutrient" th:text="${item.totalCalories}" ></td>
+							<td class="nutrient" th:text="${item.totalCarbsGrams}" ></td>
+							<td class="nutrient" th:text="${item.totalFatGrams}" ></td>
+							<td class="nutrient" th:text="${item.totalProteinGrams}" ></td>
+							<td><button th:id="'snackOne' + ${i.index}" class="remove-btn" type="submit" name="entry_index" th:value="${i.index}"><img th:src="@{/resources/images/delete-btn.png}" width="15" height="15" /></button></td> <!-- th:value="${item.id}" -->
+						</tr>
+					</th:block>
+					<tr class="last-row-tr">
+						<td class="last-row-td"><a class="add-food" th:href="@{/food/diary/add(date=${log.date}, meal=3)}"><b>Add Food</b></a></td>
+						<td class="last-row-td"></td>
+						<td class="last-row-td"></td>
+						<td class="last-row-td"></td>
+						<td class="last-row-td"></td>
+					</tr>
+					<tr class="meal-header">
+						<td>Snack 2</td>
+					</tr>
+					<th:block th:each="item, i : ${log.snackTwo}">
+						<tr class="diary-row">
+							<td class="diary-item" th:text="${item.id} + ${item.food.name}" ></td>
+							<td class="nutrient" th:text="${item.totalCalories}" ></td>
+							<td class="nutrient" th:text="${item.totalCarbsGrams}" ></td>
+							<td class="nutrient" th:text="${item.totalFatGrams}" ></td>
+							<td class="nutrient" th:text="${item.totalProteinGrams}" ></td>
+							<td><button th:id="'snackTwo' + ${i.index}" class="remove-btn" type="submit" name="entry_index" th:value="${i.index}"><img th:src="@{/resources/images/delete-btn.png}" width="15" height="15" /></button></td> <!-- th:value="${item.id}" -->
+						</tr>
+					</th:block>
+					<tr class="last-row-tr">
+						<td class="last-row-td"><a class="add-food" th:href="@{/food/diary/add(date=${log.date}, meal=4)}"><b>Add Food</b></a></td>
+						<td class="last-row-td"></td>
+						<td class="last-row-td"></td>
+						<td class="last-row-td"></td>
+						<td class="last-row-td"></td>
+					</tr>
+					<tr class="meal-header">
+						<td>Snack 3</td>
+					</tr>
+					<th:block th:each="item, i : ${log.snackThree}">
+						<tr class="diary-row">
+							<td class="diary-item" th:text="${item.id} + ${item.food.name}" ></td>
+							<td class="nutrient" th:text="${item.totalCalories}" ></td>
+							<td class="nutrient" th:text="${item.totalCarbsGrams}" ></td>
+							<td class="nutrient" th:text="${item.totalFatGrams}" ></td>
+							<td class="nutrient" th:text="${item.totalProteinGrams}" ></td>
+							<td><button th:id="'snackThree' + ${i.index}" class="remove-btn" type="submit" name="entry_index" th:value="${i.index}"><img th:src="@{/resources/images/delete-btn.png}" width="15" height="15" /></button></td> <!-- th:value="${item.id}" -->
+						</tr>
+					</th:block>
+					<tr class="last-row-tr">
+						<td class="last-row-td"><a class="add-food" th:href="@{/food/diary/add(date=${log.date}, meal=5)}"><b>Add Food</b></a></td>
+						<td class="last-row-td"></td>
+						<td class="last-row-td"></td>
+						<td class="last-row-td"></td>
+						<td class="last-row-td"></td>
+					</tr>
+				</tbody>
+			</table>
+			</form>
+		</div>
+		
+		<script type="text/javascript">
+           $('[id^=breakfast]').click(function() {
+               $("input[name=meal]").val("0"); 
+           });
+           $('[id^=lunch]').click(function() {
+        	   
+               $("input[name=meal]").val("1"); 
+            });
+           $('[id^=dinner]').click(function() {
+               $("input[name=meal]").val("2"); 
+            });
+           $('[id^=snackOne]').click(function() {
+               $("input[name=meal]").val("3"); 
+            });
+           $('[id^=snackTwo]').click(function() {
+               $("input[name=meal]").val("4"); 
+            });
+           $('[id^=snackThree]').click(function() {
+               $("input[name=meal]").val("5"); 
+            });
+       	</script>
+		
+		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>

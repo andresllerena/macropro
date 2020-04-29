@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://thymeleaf.org">
+<head>
+	<title>MacroPro | Getting your nutrition in check!</title>
+	<style>
+		.horizontal-center{
+		  	display: table;
+		  	margin: 0 auto;
+		}
+		.food-list {
+			float:left;
+			margin-right: 28%;
+		}
+		.createfood-btn {
+    		position: relative;
+			left: -14.5%;
+    		/* position: fixed;
+    		left: 400%; */
+			/* display: inline-block; */
+		}
+		.createfood-btn-list {
+    		position: relative;
+			left: -11.5%;
+    		/* position: fixed;
+    		left: 400%; */
+			/* display: inline-block; */
+		}
+		.food-list-container{
+			margin-top: 2%;
+    		position: relative;
+			left: 30%;
+		}
+		.empty-list-message {
+			margin-top: 5%;
+    		position: relative;
+			left: 10%;
+/* 			margin-top: 0%;
+    		position: relative;
+			left: 2%; */
+		}
+		.food-entries {
+			margin-top: 5%;
+    		position: relative;
+			left: 10%;
+		}
+	</style>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link th:href="@{/resources/css/style.css}" rel="stylesheet" >
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script th:src="@{/resources/js/toolbar.js}"></script>
+</head>
+<body>
+		<div id="mp-header">
+			<div id="mp-logo" class="horizontal-center"><img th:src="@{/resources/images/logo.jpg}" width="200" height="120" /></div>
+			<br>
+		</div>	
+		
+		<div>
+			<nav class="navbar navbar-expand-md topbar">
+				<div class="container-fluid">
+					<ul class="navbar-nav mx-auto">
+						<li id="account" class="nav-item"><a class="nav-link" th:href="@{/account}">My Home</a></li>
+						<li id="food" class="nav-item"><a class="nav-link" th:href="@{/food/diary}">Food</a></li>
+						<li id="about" class="nav-item"><a class="nav-link" href="#">About</a></li>
+						<li id="contactus" class="nav-item"><a class="nav-link" href="#">Contact Us</a></li>
+					</ul>
+				</div>
+			</nav>
+		</div>
+		
+		<div>
+			<nav class="navbar navbar-expand-md subbar">
+				<div class="container-fluid">
+					<ul class="navbar-nav mx-auto">
+						<li id="diary" class="nav-item"><a class="nav-link" th:href="@{/food/diary}">Food Diary</a></li>
+						<li id="search-foods" class="nav-item"><a class="nav-link" th:href="@{/food/search-foods}">Database</a></li>
+						<li id="my-foods" class="nav-item"><a class="nav-link" th:href="@{/food/my-foods}">My Foods</a></li>
+						<li id="my-meals" class="nav-item"><a class="nav-link" th:href="@{/food/my-meals}">My Meals</a></li>
+					</ul>
+				</div>
+			</nav>
+		</div>
+		
+		<div class= "food-list-container">
+			<div class="food-list">
+				<b>Your Foods</b><br>
+				
+				<div th:if="${#lists.isEmpty(myfoods)}" class="empty-list-message">
+					You have not added any foods at the moment.
+				</div>
+				<div th:if="${not #lists.isEmpty(myfoods)}" class="food-entries">
+					<th:block th:each="food: ${myfoods}">
+					    <a th:href="@{|/food/my-foods/${food.id}|}" th:text="${food.name}" ></a><br>
+					</th:block>
+				</div>
+			</div>
+			
+			<div th:if="${#lists.isEmpty(myfoods)}" class="createfood-btn">
+				<a class="btn btn-success" th:href="@{/food/new}" role="button">Create Food</a>
+			</div>
+			
+			<div th:if="${not #lists.isEmpty(myfoods)}" class="createfood-btn-list">
+				<a class="btn btn-success" th:href="@{/food/new}" role="button">Create Food</a>
+			</div>
+			
+			<!-- <div class="empty-list-message">
+				<c:if test="${empty myfoods}">
+				    You have not added any foods at the moment.
+				</c:if>
+			</div> -->
+		</div>
+		
+		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>

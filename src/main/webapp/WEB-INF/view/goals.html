@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://thymeleaf.org">
+<head>
+	<style>
+		.error {
+			color: red
+		}
+		.horizontal-center{
+		  display: table;
+		  margin: 0 auto;
+		}
+		.input-size{
+			display: inline-block;
+			width: 75px;
+		}
+		.input-size-text{
+			display: inline-block;
+			width: 73px;
+		}
+	</style>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link th:href="@{/resources/css/style.css}" rel="stylesheet" >
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script th:src="@{/resources/js/toolbar.js}"></script>
+</head>
+<body>		
+	<div id="mp-header">
+		<div id="mp-logo" class="horizontal-center"><img th:src="@{/resources/images/logo.jpg}" width="200" height="120" /></div>
+		<br>
+	</div>	
+	
+	<nav class="navbar navbar-expand-md topbar">
+		<div class="container-fluid">
+			<ul class="navbar-nav mx-auto">
+				<li id="account" class="nav-item"><a class="nav-link" th:href="@{/account}">My Home</a></li>
+				<li id="food" class="nav-item"><a class="nav-link" th:href="@{/food/diary}">Food</a></li>
+				<li id="about" class="nav-item"><a class="nav-link" href="#">About</a></li>
+				<li id="contactus" class="nav-item"><a class="nav-link" href="#">Contact Us</a></li>
+			</ul>
+		</div>
+	</nav>
+	
+	<nav class="navbar navbar-expand-md subbar">
+		<div class="container-fluid">
+			<ul class="navbar-nav mx-auto">
+				<li id="home" class="nav-item"><a class="nav-link" th:href="@{/account}">Home</a></li>
+				<li th:if="${#authentication.getPrincipal().isSubmittedGoal()} == true" id="goals" class="nav-item"><a class="nav-link" th:href="@{/account/goals}">Edit Goal</a></li>
+			</ul>
+		</div>
+	</nav>
+	
+	<br><br>
+	<div id="wrapper">
+		<div id="header" class="horizontal-center">
+			<h4>Your Goal Information</h4>
+		</div>
+	</div>
+	<br>
+	
+	<div class="horizontal-center">
+		<form th:action="@{/account/addUserGoal}" th:object="${usergoal}" method="POST">
+			<table>	
+				<col align="left">
+				<col align="left">
+				<col align="left">
+				<tbody>
+					<tr>
+						<td><label>Gender*:</label></td>
+						<td>&emsp;
+							<select th:field="*{gender}" class="input-size" >
+								<option value=" " label="--- Select ---"/>
+								<option value="M" label="Male"/>
+								<option value="F" label="Female"/>
+							</select>
+						</td>
+						<td th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}" class="error" /></td>
+					</tr>
+					<tr>
+						<td><label>Age*:</label></td>
+						<td>&emsp;&nbsp;<input th:field="*{age}" class="input-size" /></td>
+						<td th:if="${#fields.hasErrors('age')}" th:errors="*{age}" class="error" /></td>
+					</tr>
+					<tr>
+						<td><label>Goal*:</label></td>
+						<td>&emsp;
+							<select th:field="*{goal}" class="input-size" >
+								<option value="" label="--- Select ---"/>
+								<option value="BULKING" label="Bulking"/>
+								<option value="CUTTING" label="Cutting"/>
+							</select>
+						</td>
+						<td th:if="${#fields.hasErrors('goal')}" th:errors="*{goal}" class="error" /></td>
+					</tr>
+					<tr>
+						<td><label>Activity Level*:</label></td>
+						<td>&emsp;
+							<select th:field="*{activityLevel}" class="input-size">
+								<option value="-1" label="--- Select ---"/>
+								<option th:each="entry:${activityLevels.entrySet()}" th:value="${entry.key}" th:text="${entry.value}"></option>
+							</select>
+						</td>
+						<td th:if="${#fields.hasErrors('activityLevel')}" th:errors="*{activityLevel}" class="error" /></td>
+					</tr>
+					<tr>
+						<td><label>Height*:</label></td>
+						<td>&emsp;&nbsp;<input th:field="*{heightFeet}" class="input-size" />&nbsp;ft</td>
+						<td>&emsp;<input th:field="*{heightInches}" class="input-size" />&nbsp;in&emsp;&emsp;
+							<span th:if="${#fields.hasErrors('heightFeet')}" th:errors="*{heightFeet}" class="error"></span>&emsp;
+							<span th:if="${#fields.hasErrors('heightInches')}" th:errors="*{heightInches}" class="error"></span></td>
+					</tr>
+					<tr>
+						<td><label>Weight (lbs)*:</label></td>
+						<td>&emsp;&nbsp;<input th:field="*{weightPounds}" class="input-size" /></td>
+						<td>&emsp;<form:errors path="weightPounds" class="error" /></td>
+						<td th:if="${#fields.hasErrors('weightPounds')}" th:errors="*{weightPounds}" class="error" /></td>
+					</tr>
+					<tr>
+						<td><label>Diet Preference*:</label></td>
+						<td>&emsp;
+							<select th:field="*{fatPercentagePreferrence}" class="input-size">
+								<option value="-1" label="--- Select ---"/>
+								<option value="20" label="I prefer eating more carbs than fats"/>
+								<option value="25" label="Neutral"/>
+								<option value="30" label="I prefer eating more fats than carbs"/>
+							</select>
+						<td th:if="${#fields.hasErrors('fatPercentagePreferrence')}" th:errors="*{fatPercentagePreferrence}" class="error" /></td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<br>
+			<div class="horizontal-center">
+				<input type="submit" value="Submit" />
+			</div>
+		</form>
+	</div>
+	<br>
+	<div class="horizontal-center">
+		<a th:href="@{/account}">Back</a>
+	</div>
+	
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>

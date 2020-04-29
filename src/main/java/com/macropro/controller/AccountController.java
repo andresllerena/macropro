@@ -62,7 +62,7 @@ public class AccountController {
 	@GetMapping("")
 	public String showHome() {
 		logger.info("Entering home screen.");
-		return "home";
+		return "account-home";
 	}
 	
 	@GetMapping("/goals")
