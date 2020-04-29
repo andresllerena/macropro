@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -42,37 +43,37 @@ public class User implements UserDetails {
 	private int id;
 	
 	@Column(name="username")
-	@NotNull(message="must be between 1 and 20 characters")
+	@NotNull
 	@Size(min=1, max=20, message="must be between 1 and 20 characters")
 	private String username;
 	
 	@Column(name="password")
-	@NotNull(message="must be between 1 and 100 characters")
+	@NotNull
 	@Size(min=1, max=100, message="must be between 1 and 100 characters")
 	private String password;
 	
 	@Column(name="matching_password")
-	@NotNull(message="must be between 1 and 100 characters")
+	@NotNull
 	@Size(min=1, max=100, message="must be between 1 and 100 characters")
 	private String matchingPassword;
 	
 	@Column(name="first_name")
-	@NotNull(message="must be between 1 and 50 characters")
+	@NotNull
 	@Size(min=1, max=50, message="must be between 1 and 50 characters")
 	private String firstName;
 	
 	@Column(name="last_name")
-	@NotNull(message="must be between 1 and 50 characters")
+	@NotNull
 	@Size(min=1, max=50, message="must be between 1 and 50 characters")
 	private String lastName;
 	
 	@Column(name="email")
 	@ValidEmail
-	@NotNull(message="must be between 1 and 65 characters")
+	@NotNull
 	@Size(min=1, max=65, message="must be between 1 and 65 characters")
 	private String email;
 
-	@Size(min=10, max=10, message="must be 10 characters (exclude dashes)")
+	@Size(min=10, max=10, message="must be 10 characters")
 	@Column(name="phone_number")
 	private String phoneNumber;
 
@@ -101,6 +102,10 @@ public class User implements UserDetails {
 					inverseJoinColumns= {@JoinColumn(name="authority_id")})
 	private Set<UserAuthority> userAuthorities = new HashSet<>();
 
+	@OneToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST },
+					fetch = FetchType.EAGER, mappedBy = "creator")
+	private Set<Food> myFoods = new HashSet<>();
+	
 	public User() {
 	}
 	
@@ -312,6 +317,24 @@ public class User implements UserDetails {
 
 	public boolean containsUserAuthority(UserAuthority ua) {
 		return userAuthorities.contains(ua);
+	}
+
+	public Set<Food> getMyFoods() {
+		return myFoods;
+	}
+
+	public void setMyFoods(Set<Food> myFoods) {
+		this.myFoods = myFoods;
+	}
+	
+	public void addFood(Food f) {
+		this.myFoods.add(f);
+		f.setCreator(this);
+	}
+	
+	public void deleteFood(Food f) {
+		this.myFoods.remove(f);
+		f.setCreator(null);
 	}
 
 	@Override
