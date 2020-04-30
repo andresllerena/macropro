@@ -1,7 +1,6 @@
 package com.macropro.controller;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -77,7 +76,6 @@ public class FoodController {
 		logger.info("Entering Food Diary screen.");
 		
 		LocalDate date;
-		LocalDateTime datetime;
 		final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		
 		if (logDate == null) {
