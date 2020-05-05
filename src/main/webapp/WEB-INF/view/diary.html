@@ -13,25 +13,37 @@
 		.diary-container {
 			margin-top: 3%;
     		position: relative;
-			left: 9.5%;
+			left: 11.5%;
 		}
 		.date-container {
 		  	display: table;
 		  	margin: 0 auto;
 			margin-top: 3%;
-    		
+		}
+		.heading {
+			padding-top: 5px;
 		}
 		.meal-header {
 			font-weight: bold;
 		}
+		.first-stat-row {
+			margin-top: 10px;
+		}
 		.first {
-			width: 50%;
+			width: 60%;
 		}
 		.nutrient-column {
-			width: 12%;
+			width: 7%;
 			text-align:center;
+			line-height: 15px;
 			background-color: #ec312a;
 			border: 1px solid black;
+			color: white;
+			padding-top: 4px;
+			padding-bottom: 4px;
+			font-size: 12px;
+		}
+		.hidden {
 			color: white;
 		}
 		.delete {
@@ -47,6 +59,34 @@
 			border-left: 1pt solid white;
 			border-right: 1pt solid white;
 		}
+		.stat {
+			font-size: 11px;
+			background-color: #f8f8f8;
+			border-left: 1pt solid white;
+			border-right: 1pt solid white;
+			border-bottom: 1pt solid #ececec;
+			text-align: center;
+		}
+		.stat-header {
+			text-align: right;
+			font-weight: bold;
+			font-size: 14px;
+			position: relative;
+			right: 1.5%;
+		}
+		.stat-nutrient {
+			border-top: 1pt solid black;
+		}
+		.stat-last {
+			font-size: 11px;
+			background-color: #f8f8f8;
+			border-left: 1pt solid white;
+			border-right: 1pt solid white;
+			text-align: center;
+		}
+		.stat-text {
+			font-weight: bold;
+		}
 		.diary-row {
 			font-size: 11px;
 			background-color: #f8f8f8;
@@ -57,8 +97,13 @@
 		.last-row-td {
 			font-size: 11px;
 			padding: 7.5px;
-			padding-left: 20px;
 			border-bottom: 1pt solid black;
+		}
+		.add-food-col {
+			padding-left: 20px;
+		}
+		.total-nutrient {
+			text-align: center;
 		}
 		.remove-btn {
 			background-color: Transparent;
@@ -180,15 +225,20 @@
 				<tbody>
 					<tr class="meal-header">
 						<td class="first">Breakfast</td>
-						<td class="nutrient-column">Calories</td>
-						<td class="nutrient-column">Carbs<br>(g)</td>
-						<td class="nutrient-column">Fat<br>(g)</td>
-						<td class="nutrient-column">Protein<br>(g)</td>
+						<td class="nutrient-column">Calories<br>kcal</td>
+						<td class="nutrient-column">Carbs<br>g</td>
+						<td class="nutrient-column">Fat<br>g</td>
+						<td class="nutrient-column">Protein<br>g</td>
 						<td class="delete"></td>
 					</tr>
 					<th:block th:each="item, i : ${log.breakfast}">
 						<tr class="diary-row">
-							<td class="diary-item" th:text="${item.id} + ${item.food.name}" ></td>
+							<th:block th:if="${item.food.brand != ''}" >
+								<td class="diary-item" th:text="${item.food.brand} + ' - ' + ${item.food.name} + ' (' + ${item.totalServings} + ' ' + ${item.food.unitOfMeasurement} + ')' " ></td>
+							</th:block>
+							<th:block th:if="${item.food.brand == ''}" >
+								<td class="diary-item" th:text="${item.food.name} + ' (' + ${item.totalServings} + ' ' + ${item.food.unitOfMeasurement} + ')' " ></td>
+							</th:block>
 							<td class="nutrient" th:text="${item.totalCalories}" ></td>
 							<td class="nutrient" th:text="${item.totalCarbsGrams}" ></td>
 							<td class="nutrient" th:text="${item.totalFatGrams}" ></td>
@@ -197,18 +247,44 @@
 						</tr>
 					</th:block>
 					<tr class="last-row-tr">
-						<td class="last-row-td"><a class="add-food" th:href="@{/food/diary/add(date=${log.date}, meal=0)}" ><b>Add Food</b></a></td>
-						<td class="last-row-td"></td>
-						<td class="last-row-td"></td>
-						<td class="last-row-td"></td>
-						<td class="last-row-td"></td>
+						<td class="last-row-td add-food-col"><a class="add-food" th:href="@{/food/diary/add(date=${log.date}, meal=0)}" ><b>Add Food</b></a></td>
+						
+						<th:block th:if="${log.breakfastTotalCalories > 0.0}" >
+							<td id="breakfast-calories" class="last-row-td total-nutrient" th:text="${log.breakfastTotalCalories}"></td>
+						</th:block>
+						<th:block th:if="${log.breakfastTotalCalories == 0.0}" >
+							<td id="breakfast-calories" class="last-row-td total-nutrient hidden" th:text="${log.breakfastTotalCalories}"></td>
+						</th:block>
+						<th:block th:if="${log.breakfastTotalCarbs > 0.0}" >
+							<td id="breakfast-carbs" class="last-row-td total-nutrient" th:text="${log.breakfastTotalCarbs}"></td>
+						</th:block>
+						<th:block th:if="${log.breakfastTotalCarbs == 0.0}" >
+							<td id="breakfast-carbs" class="last-row-td total-nutrient hidden" th:text="${log.breakfastTotalCarbs}"></td>
+						</th:block>
+						<th:block th:if="${log.breakfastTotalFat > 0.0}" >
+							<td id="breakfast-fat" class="last-row-td total-nutrient" th:text="${log.breakfastTotalFat}"></td>
+						</th:block>
+						<th:block th:if="${log.breakfastTotalFat == 0.0}" >
+							<td id="breakfast-fat" class="last-row-td total-nutrient hidden" th:text="${log.breakfastTotalFat}"></td>
+						</th:block>
+						<th:block th:if="${log.breakfastTotalProtein > 0.0}" >
+							<td id="breakfast-protein" class="last-row-td total-nutrient" th:text="${log.breakfastTotalProtein}"></td>
+						</th:block>
+						<th:block th:if="${log.breakfastTotalProtein == 0.0}" >
+							<td id="breakfast-protein" class="last-row-td total-nutrient hidden" th:text="${log.breakfastTotalProtein}"></td>
+						</th:block>
 					</tr>
 					<tr class="meal-header">
-						<td>Lunch</td>
+						<td class="heading" >Lunch</td>
 					</tr>
 					<th:block th:each="item, i : ${log.lunch}">
 						<tr class="diary-row">
-							<td class="diary-item" th:text="${item.id} + ${item.food.name}" ></td>
+							<th:block th:if="${item.food.brand != ''}" >
+								<td class="diary-item" th:text="${item.food.brand} + ' - ' + ${item.food.name} + ' (' + ${item.totalServings} + ' ' + ${item.food.unitOfMeasurement} + ')' " ></td>
+							</th:block>
+							<th:block th:if="${item.food.brand == ''}" >
+								<td class="diary-item" th:text="${item.food.name} + ' (' + ${item.totalServings} + ' ' + ${item.food.unitOfMeasurement} + ')' " ></td>
+							</th:block>
 							<td class="nutrient" th:text="${item.totalCalories}" ></td>
 							<td class="nutrient" th:text="${item.totalCarbsGrams}" ></td>
 							<td class="nutrient" th:text="${item.totalFatGrams}" ></td>
@@ -217,18 +293,44 @@
 						</tr>
 					</th:block>
 					<tr class="last-row-tr">
-						<td class="last-row-td"><a class="add-food" th:href="@{/food/diary/add(date=${log.date}, meal=1)}"><b>Add Food</b></a></td>
-						<td class="last-row-td"></td>
-						<td class="last-row-td"></td>
-						<td class="last-row-td"></td>
-						<td class="last-row-td"></td>
+						<td class="last-row-td add-food-col"><a class="add-food" th:href="@{/food/diary/add(date=${log.date}, meal=1)}"><b>Add Food</b></a></td>
+						
+						<th:block th:if="${log.lunchTotalCalories > 0.0}" >
+							<td id="lunch-calories" class="last-row-td total-nutrient" th:text="${log.lunchTotalCalories}"></td>
+						</th:block>
+						<th:block th:if="${log.lunchTotalCalories == 0.0}" >
+							<td id="lunch-calories" class="last-row-td total-nutrient hidden" th:text="${log.lunchTotalCalories}"></td>
+						</th:block>
+						<th:block th:if="${log.lunchTotalCarbs > 0.0}" >
+							<td id="lunch-carbs" class="last-row-td total-nutrient" th:text="${log.lunchTotalCarbs}"></td>
+						</th:block>
+						<th:block th:if="${log.lunchTotalCarbs == 0.0}" >
+							<td id="lunch-carbs" class="last-row-td total-nutrient hidden" th:text="${log.lunchTotalCarbs}"></td>
+						</th:block>
+						<th:block th:if="${log.lunchTotalFat > 0.0}" >
+							<td id="lunch-fat" class="last-row-td total-nutrient" th:text="${log.lunchTotalFat}"></td>
+						</th:block>
+						<th:block th:if="${log.lunchTotalFat == 0.0}" >
+							<td id="lunch-fat" class="last-row-td total-nutrient hidden" th:text="${log.lunchTotalFat}"></td>
+						</th:block>
+						<th:block th:if="${log.lunchTotalProtein > 0.0}" >
+							<td id="lunch-protein" class="last-row-td total-nutrient" th:text="${log.lunchTotalProtein}"></td>
+						</th:block>
+						<th:block th:if="${log.lunchTotalProtein == 0.0}" >
+							<td id="lunch-protein" class="last-row-td total-nutrient hidden" th:text="${log.lunchTotalProtein}"></td>
+						</th:block>
 					</tr>
 					<tr class="meal-header">
-						<td>Dinner</td>
+						<td class="heading" >Dinner</td>
 					</tr>
 					<th:block th:each="item, i : ${log.dinner}">
-						<tr class="diary-row">
-							<td class="diary-item" th:text="${item.id} + ${item.food.name}" ></td>
+						<tr class="diary-row">							
+							<th:block th:if="${item.food.brand != ''}" >
+								<td class="diary-item" th:text="${item.food.brand} + ' - ' + ${item.food.name} + ' (' + ${item.totalServings} + ' ' + ${item.food.unitOfMeasurement} + ')' " ></td>
+							</th:block>
+							<th:block th:if="${item.food.brand == ''}" >
+								<td class="diary-item" th:text="${item.food.name} + ' (' + ${item.totalServings} + ' ' + ${item.food.unitOfMeasurement} + ')' " ></td>
+							</th:block>
 							<td class="nutrient" th:text="${item.totalCalories}" ></td>
 							<td class="nutrient" th:text="${item.totalCarbsGrams}" ></td>
 							<td class="nutrient" th:text="${item.totalFatGrams}" ></td>
@@ -237,18 +339,44 @@
 						</tr>
 					</th:block>
 					<tr class="last-row-tr">
-						<td class="last-row-td"><a class="add-food" th:href="@{/food/diary/add(date=${log.date}, meal=2)}"><b>Add Food</b></a></td>
-						<td class="last-row-td"></td>
-						<td class="last-row-td"></td>
-						<td class="last-row-td"></td>
-						<td class="last-row-td"></td>
+						<td class="last-row-td add-food-col"><a class="add-food" th:href="@{/food/diary/add(date=${log.date}, meal=2)}"><b>Add Food</b></a></td>
+						
+						<th:block th:if="${log.dinnerTotalCalories > 0.0}" >
+							<td id="dinner-calories" class="last-row-td total-nutrient" th:text="${log.dinnerTotalCalories}"></td>
+						</th:block>
+						<th:block th:if="${log.dinnerTotalCalories == 0.0}" >
+							<td id="dinner-calories" class="last-row-td total-nutrient hidden" th:text="${log.dinnerTotalCalories}"></td>
+						</th:block>
+						<th:block th:if="${log.dinnerTotalCarbs > 0.0}" >
+							<td id="dinner-carbs" class="last-row-td total-nutrient" th:text="${log.dinnerTotalCarbs}"></td>
+						</th:block>
+						<th:block th:if="${log.dinnerTotalCarbs == 0.0}" >
+							<td id="dinner-carbs" class="last-row-td total-nutrient hidden" th:text="${log.dinnerTotalCarbs}"></td>
+						</th:block>
+						<th:block th:if="${log.dinnerTotalFat > 0.0}" >
+							<td id="dinner-fat" class="last-row-td total-nutrient" th:text="${log.dinnerTotalFat}"></td>
+						</th:block>
+						<th:block th:if="${log.dinnerTotalFat == 0.0}" >
+							<td id="dinner-fat" class="last-row-td total-nutrient hidden" th:text="${log.dinnerTotalFat}"></td>
+						</th:block>
+						<th:block th:if="${log.dinnerTotalProtein > 0.0}" >
+							<td id="dinner-protein" class="last-row-td total-nutrient" th:text="${log.dinnerTotalProtein}"></td>
+						</th:block>
+						<th:block th:if="${log.dinnerTotalProtein == 0.0}" >
+							<td id="dinner-protein" class="last-row-td total-nutrient hidden" th:text="${log.dinnerTotalProtein}"></td>
+						</th:block>
 					</tr>
 					<tr class="meal-header">
-						<td>Snack 1</td>
+						<td class="heading" >Snack 1</td>
 					</tr>
 					<th:block th:each="item, i : ${log.snackOne}">
 						<tr class="diary-row">
-							<td class="diary-item" th:text="${item.id} + ${item.food.name}" ></td>
+							<th:block th:if="${item.food.brand != ''}" >
+								<td class="diary-item" th:text="${item.food.brand} + ' - ' + ${item.food.name} + ' (' + ${item.totalServings} + ' ' + ${item.food.unitOfMeasurement} + ')' " ></td>
+							</th:block>
+							<th:block th:if="${item.food.brand == ''}" >
+								<td class="diary-item" th:text="${item.food.name} + ' (' + ${item.totalServings} + ' ' + ${item.food.unitOfMeasurement} + ')' " ></td>
+							</th:block>
 							<td class="nutrient" th:text="${item.totalCalories}" ></td>
 							<td class="nutrient" th:text="${item.totalCarbsGrams}" ></td>
 							<td class="nutrient" th:text="${item.totalFatGrams}" ></td>
@@ -257,18 +385,44 @@
 						</tr>
 					</th:block>
 					<tr class="last-row-tr">
-						<td class="last-row-td"><a class="add-food" th:href="@{/food/diary/add(date=${log.date}, meal=3)}"><b>Add Food</b></a></td>
-						<td class="last-row-td"></td>
-						<td class="last-row-td"></td>
-						<td class="last-row-td"></td>
-						<td class="last-row-td"></td>
+						<td class="last-row-td add-food-col"><a class="add-food" th:href="@{/food/diary/add(date=${log.date}, meal=3)}"><b>Add Food</b></a></td>
+						
+						<th:block th:if="${log.snackOneTotalCalories > 0.0}" >
+							<td id="snack-one-calories" class="last-row-td total-nutrient" th:text="${log.snackOneTotalCalories}"></td>
+						</th:block>
+						<th:block th:if="${log.snackOneTotalCalories == 0.0}" >
+							<td id="snack-one-calories" class="last-row-td total-nutrient hidden" th:text="${log.snackOneTotalCalories}"></td>
+						</th:block>
+						<th:block th:if="${log.snackOneTotalCarbs > 0.0}" >
+							<td id="snack-one-carbs" class="last-row-td total-nutrient" th:text="${log.snackOneTotalCarbs}"></td>
+						</th:block>
+						<th:block th:if="${log.snackOneTotalCarbs == 0.0}" >
+							<td id="snack-one-carbs" class="last-row-td total-nutrient hidden" th:text="${log.snackOneTotalCarbs}"></td>
+						</th:block>
+						<th:block th:if="${log.snackOneTotalFat > 0.0}" >
+							<td id="snack-one-fat" class="last-row-td total-nutrient" th:text="${log.snackOneTotalFat}"></td>
+						</th:block>
+						<th:block th:if="${log.snackOneTotalFat == 0.0}" >
+							<td id="snack-one-fat" class="last-row-td total-nutrient hidden" th:text="${log.snackOneTotalFat}"></td>
+						</th:block>
+						<th:block th:if="${log.snackOneTotalProtein > 0.0}" >
+							<td id="snack-one-protein" class="last-row-td total-nutrient" th:text="${log.snackOneTotalProtein}"></td>
+						</th:block>
+						<th:block th:if="${log.snackOneTotalProtein == 0.0}" >
+							<td id="snack-one-protein" class="last-row-td total-nutrient hidden" th:text="${log.snackOneTotalProtein}"></td>
+						</th:block>
 					</tr>
 					<tr class="meal-header">
-						<td>Snack 2</td>
+						<td class="heading" >Snack 2</td>
 					</tr>
 					<th:block th:each="item, i : ${log.snackTwo}">
 						<tr class="diary-row">
-							<td class="diary-item" th:text="${item.id} + ${item.food.name}" ></td>
+							<th:block th:if="${item.food.brand != ''}" >
+								<td class="diary-item" th:text="${item.food.brand} + ' - ' + ${item.food.name} + ' (' + ${item.totalServings} + ' ' + ${item.food.unitOfMeasurement} + ')' " ></td>
+							</th:block>
+							<th:block th:if="${item.food.brand == ''}" >
+								<td class="diary-item" th:text="${item.food.name} + ' (' + ${item.totalServings} + ' ' + ${item.food.unitOfMeasurement} + ')' " ></td>
+							</th:block>
 							<td class="nutrient" th:text="${item.totalCalories}" ></td>
 							<td class="nutrient" th:text="${item.totalCarbsGrams}" ></td>
 							<td class="nutrient" th:text="${item.totalFatGrams}" ></td>
@@ -277,18 +431,44 @@
 						</tr>
 					</th:block>
 					<tr class="last-row-tr">
-						<td class="last-row-td"><a class="add-food" th:href="@{/food/diary/add(date=${log.date}, meal=4)}"><b>Add Food</b></a></td>
-						<td class="last-row-td"></td>
-						<td class="last-row-td"></td>
-						<td class="last-row-td"></td>
-						<td class="last-row-td"></td>
+						<td class="last-row-td add-food-col"><a class="add-food" th:href="@{/food/diary/add(date=${log.date}, meal=4)}"><b>Add Food</b></a></td>
+						
+						<th:block th:if="${log.snackTwoTotalCalories > 0.0}" >
+							<td id="snack-two-calories" class="last-row-td total-nutrient" th:text="${log.snackTwoTotalCalories}"></td>
+						</th:block>
+						<th:block th:if="${log.snackTwoTotalCalories == 0.0}" >
+							<td id="snack-two-calories" class="last-row-td total-nutrient hidden" th:text="${log.snackTwoTotalCalories}"></td>
+						</th:block>
+						<th:block th:if="${log.snackTwoTotalCarbs > 0.0}" >
+							<td id="snack-two-carbs" class="last-row-td total-nutrient" th:text="${log.snackTwoTotalCarbs}"></td>
+						</th:block>
+						<th:block th:if="${log.snackTwoTotalCarbs == 0.0}" >
+							<td id="snack-two-carbs" class="last-row-td total-nutrient hidden" th:text="${log.snackTwoTotalCarbs}"></td>
+						</th:block>
+						<th:block th:if="${log.snackTwoTotalFat > 0.0}" >
+							<td id="snack-two-fat" class="last-row-td total-nutrient" th:text="${log.snackTwoTotalFat}"></td>
+						</th:block>
+						<th:block th:if="${log.snackTwoTotalFat == 0.0}" >
+							<td id="snack-two-fat" class="last-row-td total-nutrient hidden" th:text="${log.snackTwoTotalFat}"></td>
+						</th:block>
+						<th:block th:if="${log.snackTwoTotalProtein > 0.0}" >
+							<td id="snack-two-protein" class="last-row-td total-nutrient" th:text="${log.snackTwoTotalProtein}"></td>
+						</th:block>
+						<th:block th:if="${log.snackTwoTotalProtein == 0.0}" >
+							<td id="snack-two-protein" class="last-row-td total-nutrient hidden" th:text="${log.snackTwoTotalProtein}"></td>
+						</th:block>
 					</tr>
 					<tr class="meal-header">
-						<td>Snack 3</td>
+						<td class="heading" >Snack 3</td>
 					</tr>
 					<th:block th:each="item, i : ${log.snackThree}">
 						<tr class="diary-row">
-							<td class="diary-item" th:text="${item.id} + ${item.food.name}" ></td>
+							<th:block th:if="${item.food.brand != ''}" >
+								<td class="diary-item" th:text="${item.food.brand} + ' - ' + ${item.food.name} + ' (' + ${item.totalServings} + ' ' + ${item.food.unitOfMeasurement} + ')' " ></td>
+							</th:block>
+							<th:block th:if="${item.food.brand == ''}" >
+								<td class="diary-item" th:text="${item.food.name} + ' (' + ${item.totalServings} + ' ' + ${item.food.unitOfMeasurement} + ')' " ></td>
+							</th:block>
 							<td class="nutrient" th:text="${item.totalCalories}" ></td>
 							<td class="nutrient" th:text="${item.totalCarbsGrams}" ></td>
 							<td class="nutrient" th:text="${item.totalFatGrams}" ></td>
@@ -297,11 +477,68 @@
 						</tr>
 					</th:block>
 					<tr class="last-row-tr">
-						<td class="last-row-td"><a class="add-food" th:href="@{/food/diary/add(date=${log.date}, meal=5)}"><b>Add Food</b></a></td>
-						<td class="last-row-td"></td>
-						<td class="last-row-td"></td>
-						<td class="last-row-td"></td>
-						<td class="last-row-td"></td>
+						<td class="last-row-td add-food-col"><a class="add-food" th:href="@{/food/diary/add(date=${log.date}, meal=5)}"><b>Add Food</b></a></td>
+						
+ 						<th:block th:if="${log.snackThreeTotalCalories > 0.0}" >
+							<td id="snack-three-calories" class="last-row-td total-nutrient" th:text="${log.snackThreeTotalCalories}"></td>
+						</th:block>
+						<th:block th:if="${log.snackThreeTotalCalories == 0.0}" >
+							<td id="snack-three-calories" class="last-row-td total-nutrient hidden" th:text="${log.snackThreeTotalCalories}"></td>
+						</th:block>
+						<th:block th:if="${log.snackThreeTotalCarbs > 0.0}" >
+							<td id="snack-three-carbs" class="last-row-td total-nutrient" th:text="${log.snackThreeTotalCarbs}"></td>
+						</th:block>
+						<th:block th:if="${log.snackThreeTotalCarbs == 0.0}" >
+							<td id="snack-three-carbs" class="last-row-td total-nutrient hidden" th:text="${log.snackThreeTotalCarbs}"></td>
+						</th:block>
+						<th:block th:if="${log.snackThreeTotalFat > 0.0}" >
+							<td id="snack-three-fat" class="last-row-td total-nutrient" th:text="${log.snackThreeTotalFat}"></td>
+						</th:block>
+						<th:block th:if="${log.snackThreeTotalFat == 0.0}" >
+							<td id="snack-three-fat" class="last-row-td total-nutrient hidden" th:text="${log.snackThreeTotalFat}"></td>
+						</th:block>
+						<th:block th:if="${log.snackThreeTotalProtein > 0.0}" >
+							<td id="snack-three-protein" class="last-row-td total-nutrient" th:text="${log.snackThreeTotalProtein}"></td>
+						</th:block>
+						<th:block th:if="${log.snackThreeTotalProtein == 0.0}" >
+							<td id="snack-three-protein" class="last-row-td total-nutrient hidden" th:text="${log.snackThreeTotalProtein}"></td>
+						</th:block>
+					</tr>
+					<tr>
+						<td style="padding: 10px;"></td>
+						<td style="padding: 10px;"></td>
+						<td style="padding: 10px;"></td>
+						<td style="padding: 10px;"></td>
+						<td style="padding: 10px;"></td>
+					</tr>
+					<tr class="first-stat-row">
+						<td class="stat-header" >Totals</td>
+						<td class="stat"><span id="total-calories" class="stat-text"></span></td>
+						<td class="stat"><span id="total-carbs" class="stat-text"></span></td>
+						<td class="stat"><span id="total-fat" class="stat-text"></span></td>
+						<td class="stat"><span id="total-protein" class="stat-text"></span></td>
+					</tr>
+					<tr>
+						<td class="stat-header" >Daily Target Macros</td>
+						<td class="stat"><span id="target-calories" class="stat-text" th:text="${#authentication.getPrincipal().getMacroPlan().getTargetCalories()}" style="font-weight: bold;"></span></td>
+						<td class="stat"><span id="target-carbs" class="stat-text" th:text="${#authentication.getPrincipal().getMacroPlan().getCarbsGrams()}" style="font-weight: bold;"></span></td>
+						<td class="stat"><span id="target-fat" class="stat-text" th:text="${#authentication.getPrincipal().getMacroPlan().getFatGrams()}" style="font-weight: bold;"></span></td>
+						<td class="stat"><span id="target-protein" class="stat-text" th:text="${#authentication.getPrincipal().getMacroPlan().getProteinGrams()}" style="font-weight: bold;"></span></td>
+					</tr>
+					<tr>
+						<td class="stat-header" >Remaining</td>
+						<td class="stat-last"><span id="remaining-calories" class="stat-text"></span></td>
+						<td class="stat-last"><span id="remaining-carbs" class="stat-text"></span></td>
+						<td class="stat-last"><span id="remaining-fat" class="stat-text"></span></td>
+						<td class="stat-last"><span id="remaining-protein" class="stat-text"></span></td>
+					</tr>
+					<tr class="meal-header">
+						<td class="first"></td>
+						<td class="nutrient-column stat-nutrient">Calories<br>kcal</td>
+						<td class="nutrient-column stat-nutrient">Carbs<br>g</td>
+						<td class="nutrient-column stat-nutrient">Fat<br>g</td>
+						<td class="nutrient-column stat-nutrient">Protein<br>g</td>
+						<td class="delete"></td>
 					</tr>
 				</tbody>
 			</table>
@@ -309,6 +546,89 @@
 		</div>
 		
 		<script type="text/javascript">
+			
+			function precision(a) {
+			  if (!isFinite(a)) return 0;
+			  var e = 1, p = 0;
+			  while (Math.round(a * e) / e !== a) { e *= 10; p++; }
+			  return p;
+			}
+			
+			function round(value, precision) {
+			    var multiplier = Math.pow(10, precision || 0);
+			    return Math.round(value * multiplier) / multiplier;
+			}
+		
+			var targetCalories = parseFloat($("#target-calories").text());
+			var targetCarbs = parseFloat($("#target-carbs").text());
+			var targetFat = parseFloat($("#target-fat").text());
+			var targetProtein = parseFloat($("#target-protein").text());
+			
+			var totalCalories = parseFloat($("#breakfast-calories").text()) + parseFloat($("#lunch-calories").text()) + parseFloat($("#dinner-calories").text()) + parseFloat($("#snack-one-calories").text()) + parseFloat($("#snack-two-calories").text()) + parseFloat($("#snack-three-calories").text());
+			var totalCarbs = parseFloat($("#breakfast-carbs").text()) + parseFloat($("#lunch-carbs").text()) + parseFloat($("#dinner-carbs").text()) + parseFloat($("#snack-one-carbs").text()) + parseFloat($("#snack-two-carbs").text()) + parseFloat($("#snack-three-carbs").text());
+			var totalFat = parseFloat($("#breakfast-fat").text()) + parseFloat($("#lunch-fat").text()) + parseFloat($("#dinner-fat").text()) + parseFloat($("#snack-one-fat").text()) + parseFloat($("#snack-two-fat").text()) + parseFloat($("#snack-three-fat").text());
+			var totalProtein = parseFloat($("#breakfast-protein").text()) + parseFloat($("#lunch-protein").text()) + parseFloat($("#dinner-protein").text()) + parseFloat($("#snack-one-protein").text()) + parseFloat($("#snack-two-protein").text()) + parseFloat($("#snack-three-protein").text());
+	
+			totalCalories = precision(totalCalories) <= 1 ? totalCalories.toFixed(1) : totalCalories.toFixed(2);
+			totalCarbs = precision(totalCarbs) <= 1 ? totalCarbs.toFixed(1) : totalCarbs.toFixed(2);
+			totalFat = precision(totalFat) <= 1 ? totalFat.toFixed(1) : totalFat.toFixed(2);
+			totalProtein = precision(totalProtein) <= 1 ? totalProtein.toFixed(1) : totalProtein.toFixed(2);
+			
+			var remainingCalories = targetCalories - totalCalories;
+			var remainingCarbs = targetCarbs- totalCarbs;
+			var remainingFat = targetFat - totalFat;
+			var remainingProtein = targetProtein - totalProtein;
+			
+			remainingCalories = precision(remainingCalories) <= 1 ? remainingCalories.toFixed(1) : remainingCalories.toFixed(2);
+			remainingCarbs = precision(remainingCarbs) <= 1 ? remainingCarbs.toFixed(1) : remainingCarbs.toFixed(2);
+			remainingFat = precision(remainingFat) <= 1 ? remainingFat.toFixed(1) : remainingFat.toFixed(2);
+			remainingProtein = precision(remainingProtein) <= 1 ? remainingProtein.toFixed(1) : remainingProtein.toFixed(2);
+			
+			$("#total-calories").text(totalCalories);
+			$("#total-carbs").text(totalCarbs);
+			$("#total-fat").text(totalFat);
+			$("#total-protein").text(totalProtein);
+			
+			if (remainingCalories < 0) {
+				$("#remaining-calories").css('color', 'red');
+				remainingCalories = remainingCalories * -1;
+			} else {
+				$("#remaining-calories").css('color', 'green');
+			}
+			
+			if (remainingCarbs < 0) {
+				$("#remaining-carbs").css('color', 'red');
+				remainingCarbs = remainingCarbs * -1;
+			} else {
+				$("#remaining-carbs").css('color', 'green');
+			}
+			
+			if (remainingFat < 0) {
+				$("#remaining-fat").css('color', 'red');
+				remainingFat = remainingFat * -1;
+			} else {
+				$("#remaining-fat").css('color', 'green');
+			}
+			
+			if (remainingProtein < 0) {
+				$("#remaining-protein").css('color', 'red');
+				remainingProtein = remainingProtein * -1;
+			} else {
+				$("#remaining-protein").css('color', 'green');
+			}
+			
+			$("#remaining-calories").text(remainingCalories);
+			$("#remaining-carbs").text(remainingCarbs);
+			$("#remaining-fat").text(remainingFat);
+			$("#remaining-protein").text(remainingProtein);
+			
+			
+			
+			console.log(targetCalories - totalCalories);
+			console.log(targetCarbs- totalCarbs);
+			console.log(targetFat - totalFat);
+			console.log(targetProtein - totalProtein);
+			
 			var d = $('#currentDate').text();
 			var dArr = d.split("-")
 			

@@ -23,7 +23,7 @@ public class Food {
 	@Column(name="id")
 	public int id;
 
-	@Column(name="brand", insertable=false)
+	@Column(name="brand")
 	@Size(max=50, message="only allowed 50 characters")
 	public String brand;
 

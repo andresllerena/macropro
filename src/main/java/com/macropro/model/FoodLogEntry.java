@@ -12,6 +12,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.macropro.util.DoubleUtil;
+
 @Entity
 @Table(name="food_log_entries")
 public class FoodLogEntry {
@@ -28,6 +30,9 @@ public class FoodLogEntry {
 	@Column(name="num_servings")
     public Double numberOfServings;
 
+	@Column(name="total_servings")
+    public Double totalServings;
+	
 	@Column(name="total_calories")
 	public Double totalCalories;
 
@@ -55,6 +60,7 @@ public class FoodLogEntry {
 		this.food = food;
 		this.numberOfServings = numberOfServings;
 		setTotalMacros();
+		setTotalServings();
 	}
 
 	public FoodLogEntry(int id) {
@@ -83,6 +89,18 @@ public class FoodLogEntry {
 
 	public void setNumberOfServings(Double numberOfServings) {
 		this.numberOfServings = numberOfServings;
+	}
+
+	public Double getTotalServings() {
+		return totalServings;
+	}
+
+	public void setTotalServings(Double totalServings) {
+		this.totalServings = totalServings;
+	}
+	
+	public void setTotalServings() {
+		this.totalServings = Double.valueOf(DoubleUtil.round(this.numberOfServings.doubleValue() * this.food.getServingSize().doubleValue()));
 	}
 
 	public Double getTotalCalories() {
@@ -118,10 +136,10 @@ public class FoodLogEntry {
 	}
 	
 	public void setTotalMacros() {
-		this.totalCalories = Double.valueOf(this.food.getCalories().doubleValue() * this.numberOfServings.doubleValue());
-		this.totalCarbsGrams = Double.valueOf(this.food.getCarbsGrams().doubleValue() * this.numberOfServings.doubleValue());
-		this.totalFatGrams = Double.valueOf(this.food.getFatGrams().doubleValue() * this.numberOfServings.doubleValue());
-		this.totalProteinGrams = Double.valueOf(this.food.getProteinGrams().doubleValue() * this.numberOfServings.doubleValue());
+		this.totalCalories = Double.valueOf(DoubleUtil.round(this.food.getCalories().doubleValue() * this.numberOfServings.doubleValue()));
+		this.totalCarbsGrams = Double.valueOf(DoubleUtil.round(this.food.getCarbsGrams().doubleValue() * this.numberOfServings.doubleValue()));
+		this.totalFatGrams = Double.valueOf(DoubleUtil.round(this.food.getFatGrams().doubleValue() * this.numberOfServings.doubleValue()));
+		this.totalProteinGrams = Double.valueOf(DoubleUtil.round(this.food.getProteinGrams().doubleValue() * this.numberOfServings.doubleValue()));
 	}
 
 	public boolean isSelected() {

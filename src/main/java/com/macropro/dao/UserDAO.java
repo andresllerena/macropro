@@ -9,11 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
+import com.macropro.enums.UserRole;
 import com.macropro.model.User;
 import com.macropro.model.UserAuthority;
 import com.macropro.model.UserGoal;
 import com.macropro.model.UserMacroPlan;
-import com.macropro.types.UserRole;
 
 @Repository
 public class UserDAO implements IUserDAO {
