@@ -99,12 +99,30 @@
 					<tbody>
 						<tr th:each="entry, stat: *{entries}">
 							<td>
-								<input type="checkbox" th:field="*{entries[__${stat.index}__].selected}" /> <!-- th:value="${entry}" -->
-								<label style="padding-left : 7.5px" th:text="${entry.food.name}"></label>
+								<input th:id="'entry_' + ${stat.index}" type="checkbox" th:field="*{entries[__${stat.index}__].selected}" /> <!-- th:value="${entry}" -->
+								
+								<th:block th:if="${entry.food.brand != ''}" >
+									<label style="padding-left : 7.5px" th:text="${entry.food.brand} + ' - ' + ${entry.food.name} + ' (' + ${entry.totalServings} + ' ' + ${entry.food.unitOfMeasurement} + ')' " ></label>
+								</th:block>
+								<th:block th:if="${entry.food.brand == ''}" >
+									<label style="padding-left : 7.5px" th:text="${entry.food.name} + ' (' + ${entry.totalServings} + ' ' + ${entry.food.unitOfMeasurement} + ')' " ></label>
+								</th:block>
 								<span style="padding-left : 10px" ><b>|</b></span>
 								<span style="padding-left : 10px; padding-right: 5px;" >Qnt:</span>
-								<input type="text" th:field="*{entries[__${stat.index}__].numberOfServings}" class="quantity" /> <!-- th:value="${entry.numberOfServings}" -->
+								<input th:id="'quantity_' + ${stat.index}" type="text" th:field="*{entries[__${stat.index}__].numberOfServings}" class="quantity" value="" /> <!-- th:value="${entry.numberOfServings}" -->
+								<span th:id="'macro_' + ${stat.index}" style="display:none; visibility: hidden; color: red; padding-left: 10px;">
+										(
+										Calories: <span th:id="'calories_' + ${stat.index}" th:text="${entry.totalCalories} + ','" value="" ></span>
+										Carbs: <span th:id="'carbs_' + ${stat.index}" th:text="${entry.totalCarbsGrams} + ' g,'" value="" ></span>
+										Fat: <span th:id="'fat_' + ${stat.index}" th:text="${entry.totalFatGrams} + ' g,'" value="" ></span>
+										Protein: <span th:id="'protein_' + ${stat.index}" th:text="${entry.totalProteinGrams} + ' g'" value="" ></span>
+										)
+								</span>
 								<input type="hidden" th:field="*{entries[__${stat.index}__].id}" />
+								<input th:id="'baseCalories_' + ${stat.index}" type="hidden" th:value="${entry.totalCalories}" />
+								<input th:id="'baseCarbs_' + ${stat.index}" type="hidden" th:value="${entry.totalCarbsGrams}" />
+								<input th:id="'baseFat_' + ${stat.index}" type="hidden" th:value="${entry.totalFatGrams}" />
+								<input th:id="'baseProtein_' + ${stat.index}" type="hidden" th:value="${entry.totalProteinGrams}" />
 							</td>
 						</tr>
 					</tbody>
@@ -112,11 +130,95 @@
 				
 				<br>
 				<div class="horizontal-center">
-					<input type="submit" value="Submit" />
+					<input id="submit-foods" type="submit" value="Submit" />
 				</div>
 			</form>
 		</div>
 	</div>
+	
+	<script type="text/javascript">
+		Number.prototype.countDecimals = function () {
+		    if(Math.floor(this.valueOf()) === this.valueOf()) return 0;
+		    return this.toString().split(".")[1].length || 0; 
+		}
+	
+		$('input[type="checkbox"]').click(function() {
+			var idArr = this.id.split("_");
+			var index = idArr[1];
+			
+			if ($(this).prop("checked") == true) {
+				//alert(this.id + " checked");
+				$("#macro_" + index).show();
+				$("#macro_" + index).css("visibility", "visible");
+			} else if ($(this).prop("checked") == false) {
+				//alert(this.id + " unchecked");
+				$("#macro_" + index).hide();
+				$("#macro_" + index).css("visibility", "hidden");
+			}
+		});
+		
+	    $('input[id^=quantity_]').on("input", function(){
+			var idArr = this.id.split("_");
+			var index = idArr[1];
+	    	
+	    	if($.isNumeric($(this).val()) && $(this).val() > 0.0) {
+	    		if ($('#entry_' + index).is(':checked')) {
+					$("#macro_" + index).show();
+					$("#macro_" + index).css("visibility", "visible");
+	    		}
+				
+	    		var newQuantity = $(this).val();
+
+	    		var calories = $("#baseCalories_" + index).val();
+	    		var carbs = $("#baseCarbs_" + index).val();
+	    		var fat = $("#baseFat_" + index).val();
+	    		var protein = $("#baseProtein_" + index).val();
+
+	    		var newCalories = calories * newQuantity;
+	    		var newCarbs = carbs * newQuantity;
+	    		var newFat = fat * newQuantity;
+	    		var newProtein = protein * newQuantity;
+	    		
+/* 	    		console.log(newCarbs.countDecimals());
+	    		console.log(newFat.countDecimals());
+	    		console.log(newProtein.countDecimals());
+	    		console.log("***"); */
+	    		
+	    		newCalories = newCalories.countDecimals() <= 1 ? newCalories.toFixed(1) : newCalories.toFixed(2);
+	    		newCarbs = newCarbs.countDecimals() <= 1 ? newCarbs.toFixed(1) : newCarbs.toFixed(2);
+	    		newFat = newFat.countDecimals() <= 1 ? newFat.toFixed(1) : newFat.toFixed(2);
+	    		newProtein = newProtein.countDecimals() <= 1 ? newProtein.toFixed(1) : newProtein.toFixed(2);
+	    		
+/* 	    		console.log(carbs);
+	    		console.log(fat);
+	    		console.log(protein);
+	    		console.log("***");
+	    		console.log(carbs * newQuantity);
+	    		console.log(fat * newQuantity);
+	    		console.log(protein * newQuantity); */
+
+	    		$("#calories_" + index).text(newCalories.toString() + ",");
+	    		$("#carbs_" + index).text(newCarbs.toString() + " g,");
+	    		$("#fat_" + index).text(newFat.toString() + " g,");
+	    		$("#protein_" + index).text(newProtein.toString() + " g");
+	    	} else {
+				$("#macro_" + index).hide();
+				$("#macro_" + index).css("visibility", "hidden");
+	    	}
+	    });
+	    
+	    $('input[id^=quantity_]').focus(function() {
+	        // console.log(this.id + ' - in');
+	    }).blur(function() {
+	        console.log(this.id + ' - out');
+	        if(!($.isNumeric($(this).val()) && $(this).val() > 0.0)) {
+	        	//alert("Invalid quantity value");
+	        	$('#' + this.id).val("1.0");
+	        	$('#' + this.id).trigger("input");
+	        }
+	    });
+		
+	</script>
 	
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
