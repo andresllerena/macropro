@@ -1,4 +1,4 @@
-package com.macropro.types;
+package com.macropro.enums;
 
 public enum Goal {
 	BULKING("BULKING"),
