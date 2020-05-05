@@ -58,12 +58,14 @@ public class FoodDAO implements IFoodDAO {
 	public List<FoodLogEntry> getFoodLogEntries(LocalDate date, User currentUser) {
 		Session current = sessionFactory.getCurrentSession();
 		List<FoodLogEntry> foodLogEntries = new ArrayList<>();
-		List<FoodLogEntry> privateFoods = current.createQuery("select f from FoodLogEntry f where f.food.creator.id = :id and f.food.publicFlag= :publicflag", FoodLogEntry.class)
+		List<FoodLogEntry> privateFoods = current.createQuery("select f from FoodLogEntry f where f.food.creator.id = :id and f.food.publicFlag= :publicflag and f.numberOfServings= :numServings", FoodLogEntry.class)
 									.setParameter("id", 1)
 									.setParameter("publicflag", false)
+									.setParameter("numServings", 1.0)
 									.list();
-		List<FoodLogEntry> publicFoods = current.createQuery("select f from FoodLogEntry f where f.food.publicFlag= :publicflag", FoodLogEntry.class)
+		List<FoodLogEntry> publicFoods = current.createQuery("select f from FoodLogEntry f where f.food.publicFlag= :publicflag and f.numberOfServings= :numServings", FoodLogEntry.class)
 									.setParameter("publicflag", true)
+									.setParameter("numServings", 1.0)
 									.list();
 		foodLogEntries.addAll(privateFoods);
 		foodLogEntries.addAll(publicFoods);
