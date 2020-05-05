@@ -37,5 +37,5 @@ $(document).ready(function(){
     $('li[id="' + activeTopItem + '"]').addClass("active");
     
     console.log('setting "' + activeSubItem + '" as active subbar list item');
-    $('.subbar .navbar-nav li[id="' + activeSubItem + '"]').addClass("active");
+    $('.subbar .navbar-nav li[id="' + activeSubItem.split("?")[0] + '"]').addClass("active");
 })
