@@ -22,4 +22,12 @@ public interface IFoodDAO {
 
 	void removeFoodFromLog(int entryIndex, int meal, LocalDate date, User currentUser);
 
+	User deleteFood(int id);
+
+	Food getFood(int id);
+
+	Food updateFood(Food food, User currentUser);
+
+	User addFood(Food food);
+
 }

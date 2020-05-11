@@ -28,6 +28,14 @@ public class FoodDAO implements IFoodDAO {
 		current.merge(fle);
 		return user;
 	}
+	
+	@Override
+	public User addFood(Food food) {
+		Session current = sessionFactory.getCurrentSession();
+		FoodLogEntry fle = new FoodLogEntry(food, Double.valueOf(1.0));
+		current.merge(fle);
+		return food.getCreator();
+	}
 
 	@Override
 	public FoodLog getFoodLog(LocalDate date, User currentUser) {
@@ -58,8 +66,12 @@ public class FoodDAO implements IFoodDAO {
 	public List<FoodLogEntry> getFoodLogEntries(LocalDate date, User currentUser) {
 		Session current = sessionFactory.getCurrentSession();
 		List<FoodLogEntry> foodLogEntries = new ArrayList<>();
-		List<FoodLogEntry> privateFoods = current.createQuery("select f from FoodLogEntry f where f.food.creator.id = :id and f.food.publicFlag= :publicflag and f.numberOfServings= :numServings", FoodLogEntry.class)
-									.setParameter("id", 1)
+		List<FoodLogEntry> myFoods = current.createQuery("select f from FoodLogEntry f where f.food.creator.id = :id and f.numberOfServings= :numServings", FoodLogEntry.class)
+									.setParameter("id", currentUser.getId())
+									.setParameter("numServings", 1.0)
+									.list();
+		/*List<FoodLogEntry> privateFoods = current.createQuery("select f from FoodLogEntry f where f.food.creator.id = :id and f.food.publicFlag= :publicflag and f.numberOfServings= :numServings", FoodLogEntry.class)
+									.setParameter("id", currentUser.getId())
 									.setParameter("publicflag", false)
 									.setParameter("numServings", 1.0)
 									.list();
@@ -68,7 +80,8 @@ public class FoodDAO implements IFoodDAO {
 									.setParameter("numServings", 1.0)
 									.list();
 		foodLogEntries.addAll(privateFoods);
-		foodLogEntries.addAll(publicFoods);
+		foodLogEntries.addAll(publicFoods);*/
+		foodLogEntries.addAll(myFoods);
 		
 		return foodLogEntries;
 	}
@@ -144,6 +157,53 @@ public class FoodDAO implements IFoodDAO {
 		}
 		
 		current.update(log);
+	}
+
+	@Override
+	public User deleteFood(int id) {
+		Session current = sessionFactory.getCurrentSession();
+		Food f = (Food) current.get(Food.class, id);
+		User u = f.getCreator();
+		u.deleteFood(f);
+		current.persist(u);
+		return u;
+	}
+
+	@Override
+	public Food getFood(int id) {
+		Session current = sessionFactory.getCurrentSession();
+		Food f = (Food) current.get(Food.class, id);
+		return f;
+	}
+
+	@Override
+	public Food updateFood(Food food, User currentUser) {
+		Session current = sessionFactory.getCurrentSession();
+		Food f = (Food) current.get(Food.class, food.getId());
+		
+		if (f.equals(food))
+			return null;
+		
+
+		Food newFood = new Food(f.getBrand(), f.getName(), food.getServingSize(), food.getUnitOfMeasurement(), 
+								food.getCalories(), food.getCarbsGrams(), food.getFatGrams(), food.getProteinGrams(), 
+								food.getFiberGrams(), f.isPublicFlag(), f.getCreator());
+		
+		f.removeCreator(f.getCreator());
+		
+		// update all entries 
+//		List<FoodLogEntry> entries = current.createQuery("select f from FoodLogEntry f where f.food.id = :id", FoodLogEntry.class)
+//				.setParameter("id", f.getId())
+//				.list();
+//		
+//		for (FoodLogEntry entry : entries) {
+//			entry.setFood(f);
+//			current.persist(entry);
+//		}
+		
+		current.persist(f);
+		
+		return newFood;
 	}
 
 }

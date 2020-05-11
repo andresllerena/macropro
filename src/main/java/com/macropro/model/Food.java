@@ -69,7 +69,7 @@ public class Food {
 	@NotNull
 	public boolean publicFlag;
 
-    @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST }, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.PERSIST }, fetch = FetchType.EAGER)
     @JoinColumn(name = "creator_id")
 	public User creator;
 
@@ -102,7 +102,7 @@ public class Food {
 		this.proteinGrams = proteinGrams;
 		this.fiberGrams = fiberGrams;
 		this.publicFlag = publicFlag;
-		this.creator = creator;
+		setCreator(creator);
 	}
 	
 	public Food(int id) {
@@ -201,9 +201,18 @@ public class Food {
 		return creator;
 	}
 
+	public void setCreatorNull() {
+		this.creator = null;
+	}
+	
 	public void setCreator(User creator) {
 		this.creator = creator;
 		creator.getMyFoods().add(this);
+	}
+	
+	public void removeCreator(User creator) {
+		creator.getMyFoods().remove(this);
+		this.creator = null;
 	}
 	
 	public static Double generateTotalCalories(Double carbs, Double fat, Double protein) {
@@ -221,8 +230,10 @@ public class Food {
 		result = prime * result + ((carbsGrams == null) ? 0 : carbsGrams.hashCode());
 		result = prime * result + ((fatGrams == null) ? 0 : fatGrams.hashCode());
 		result = prime * result + ((fiberGrams == null) ? 0 : fiberGrams.hashCode());
+		result = prime * result + id;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((proteinGrams == null) ? 0 : proteinGrams.hashCode());
+		result = prime * result + (publicFlag ? 1231 : 1237);
 		result = prime * result + ((servingSize == null) ? 0 : servingSize.hashCode());
 		result = prime * result + ((unitOfMeasurement == null) ? 0 : unitOfMeasurement.hashCode());
 		return result;
@@ -262,6 +273,8 @@ public class Food {
 				return false;
 		} else if (!fiberGrams.equals(other.fiberGrams))
 			return false;
+		if (id != other.id)
+			return false;
 		if (name == null) {
 			if (other.name != null)
 				return false;
@@ -271,6 +284,8 @@ public class Food {
 			if (other.proteinGrams != null)
 				return false;
 		} else if (!proteinGrams.equals(other.proteinGrams))
+			return false;
+		if (publicFlag != other.publicFlag)
 			return false;
 		if (servingSize == null) {
 			if (other.servingSize != null)
@@ -290,7 +305,7 @@ public class Food {
 		return "Food [id=" + id + ", brand=" + brand + ", name=" + name + ", servingSize=" + servingSize
 				+ ", unitOfMeasurement=" + unitOfMeasurement + ", calories=" + calories + ", carbsGrams=" + carbsGrams
 				+ ", fatGrams=" + fatGrams + ", proteinGrams=" + proteinGrams + ", fiberGrams=" + fiberGrams
-				+ ", publicFlag=" + publicFlag + "]";
+				+ ", publicFlag=" + publicFlag + ", creator=" + creator + "]";
 	}
 	
 }

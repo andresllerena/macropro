@@ -334,7 +334,7 @@ public class User implements UserDetails {
 	
 	public void deleteFood(Food f) {
 		this.myFoods.remove(f);
-		f.setCreator(null);
+		f.setCreatorNull();
 	}
 
 	@Override

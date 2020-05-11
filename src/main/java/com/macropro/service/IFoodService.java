@@ -21,5 +21,11 @@ public interface IFoodService {
 	public void addFoodsToLog(List<FoodLogEntry> selected, int meal, LocalDate date, User currentUser);
 
 	public void removeFoodFromLog(int entryIndex, int meal, LocalDate date, User currentUser);
+
+	public User deleteFood(int id);
+
+	public Food getFood(int id);
+
+	public User updateFood(Food food, User currentUser);
 	
 }

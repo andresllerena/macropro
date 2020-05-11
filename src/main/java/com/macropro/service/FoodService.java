@@ -59,4 +59,28 @@ public class FoodService implements IFoodService {
 	public void removeFoodFromLog(int entryIndex, int meal, LocalDate date, User currentUser) {
 		foodDAO.removeFoodFromLog(entryIndex, meal, date, currentUser);
 	}
+
+	@Transactional (rollbackFor = Exception.class)
+	@Override
+	public User deleteFood(int id) {
+		return foodDAO.deleteFood(id);
+		
+	}
+
+	@Transactional (rollbackFor = Exception.class)
+	@Override
+	public Food getFood(int id) {
+		return foodDAO.getFood(id);
+	}
+
+	@Transactional (rollbackFor = Exception.class)
+	@Override
+	public User updateFood(Food food, User currentUser) {
+		Food f = foodDAO.updateFood(food, currentUser);
+		
+		if (f == null)
+			return null;
+		
+		return foodDAO.addFood(f);
+	}
 }

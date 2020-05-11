@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://thymeleaf.org">
+<head>
+	<title>MacroPro | Getting your nutrition in check!</title>
+	<style>
+		body {
+			padding-bottom: 150px;
+		}
+		.horizontal-center{
+		  	display: table;
+		  	margin: 0 auto;
+		}
+		.nutrition-label {
+			position:relative;
+			left: 50%;
+			transform: translateX(-50%);
+			margin-top: 2.5%;
+			height: 315px;
+			width: 300px;
+			border: 1px solid black;
+			overflow: hidden;
+		}
+		.nutrition-facts {
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+			font-weight: 700;
+			font-size: 40px;
+			display: table;
+			margin: 0 auto;
+		}
+		.macro {
+			width: 97.5%;
+		}
+		.macro tr {
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+			font-size: 12px;
+		}
+		.macro tr td {
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+			font-size: 12px;
+		}
+		.macro tr .macro-text {
+			font-weight: 750;
+		 }
+		.macro tr .macro-value {
+			text-align: left;
+		 }
+		.macro tr .macro-percent {
+			font-weight: 750;
+			text-align: right;
+		}
+		.macro-item {
+			border-bottom: 1px solid black;
+		}
+		.divider {
+			border-bottom: 5px solid black;
+		}
+		.serving-size {
+			display: flex;
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+			font-weight: 725;
+			font-size: 13px;
+		}
+		.ss-text {
+			position: absolute;
+			top: 22.5%;
+			left: 3.25%;
+			float: left;
+		}
+		.ss-value {
+			float: right;
+			position: relative;
+			right: 7.5px;
+		}
+		.calories {
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+		}
+		.calories-text {
+			position: absolute;
+			top: 32%;
+			left: 3.25%;
+			/* float: left; */
+			margin-top: 3%;
+			font-weight: 750;
+			font-size: 20px;
+		}
+		.calories-value {
+			position: absolute;
+			top: 35.5%;
+			right: 3.25%;
+			/* float: right; */
+			font-weight: 750;
+			font-size: 26px;
+		}
+		.percent-macros {
+			position: absolute;
+			top: 45.5%;
+			right: 3.25%;
+			/* float: right; */
+			font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+			font-weight: 750;
+			font-size: 10px;
+		}
+		.sel-food {
+			position: relative;
+			top: 0%;
+			float: left;
+		}
+		.error-text {
+		  	display: table;
+			margin: 0 auto;
+			margin-top: 1.5%;
+		}
+	</style>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<link th:href="@{/resources/css/style.css}" rel="stylesheet" >
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script th:src="@{/resources/js/toolbar.js}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</head>
+<body>
+		<div id="mp-header">
+			<div id="mp-logo" class="horizontal-center"><img th:src="@{/resources/images/logo.jpg}" width="200" height="120" /></div>
+			<br>
+		</div>	
+		
+		<div>
+			<nav class="navbar navbar-expand-md topbar">
+				<div class="container-fluid">
+					<ul class="navbar-nav mx-auto">
+						<li id="account" class="nav-item"><a class="nav-link" th:href="@{/account}">My Home</a></li>
+						<li id="food" class="nav-item"><a class="nav-link" th:href="@{/food/diary}">Food</a></li>
+						<li id="about" class="nav-item"><a class="nav-link" href="#">About</a></li>
+						<li id="contactus" class="nav-item"><a class="nav-link" href="#">Contact Us</a></li>
+					</ul>
+				</div>
+			</nav>
+		</div>
+		
+		<div>
+			<nav class="navbar navbar-expand-md subbar">
+				<div class="container-fluid">
+					<ul class="navbar-nav mx-auto">
+						<li id="diary" class="nav-item"><a class="nav-link" th:href="@{/food/diary}">Food Diary</a></li>
+						<li id="search-foods" class="nav-item"><a class="nav-link" th:href="@{/food/search-foods}">Database</a></li>
+						<li id="my-foods" class="nav-item"><a class="nav-link" th:href="@{/food/my-foods}">My Foods</a></li>
+						<li id="my-meals" class="nav-item"><a class="nav-link" th:href="@{/food/my-meals}">My Meals</a></li>
+					</ul>
+				</div>
+			</nav>
+		</div>
+		
+		<input id="goal-carbs" type="hidden" th:value="${#authentication.getPrincipal().getMacroPlan().getCarbsGrams()}" >
+		<input id="goal-fat" type="hidden" th:value="${#authentication.getPrincipal().getMacroPlan().getFatGrams()}" >
+		<input id="goal-protein" type="hidden" th:value="${#authentication.getPrincipal().getMacroPlan().getProteinGrams()}" > 
+		
+		<div style="display:table;margin:0 auto;margin-top: 3%;font-weight:bold;font-size:20px;">
+			<th:block th:if="${food.brand != ''}" >
+				<span th:text="${food.brand} + ' - ' + ${food.name}"></span>
+			</th:block>
+			<th:block th:if="${food.brand == ''}" >
+				<span th:text="${food.name}"></span>
+			</th:block>
+		</div>
+		
+		<th:block th:if="${error != null}" >
+			<div class="error-text">
+				<span style="color: red;" th:text="${error}"></span>
+			</div>
+		</th:block>
+		
+		<form th:action="@{/food/edit}" th:object="${food}" method="POST">
+			<div class="nutrition-label">
+				<input type="hidden" th:field="*{id}">
+				<input type="hidden" th:field="*{brand}">
+				<input type="hidden" th:field="*{name}">
+				<input type="hidden" th:field="*{publicFlag}">
+			
+				<span class="nutrition-facts">Nutrition Facts</span>
+			
+				<div class="serving-size">
+					<span class="ss-text">Serving size</span>
+					<input type="text" th:field="*{servingSize}" style="margin-top:3%;margin-left:67%;height:20px;width:15%;text-align:center;" />
+					<input type="text" th:field="*{unitOfMeasurement}" style="margin-top:3%;height:20px;width:15%;border:0;text-align:center;font-weight: 725;font-size: 13px;" readonly />
+				</div>
+				
+				<div style="position:absolute;left:50%;transform: translateX(-50%);margin-top:2.5%;height:3%;width:94%;background:black;"></div>
+				
+				<div class="calories">
+					<span class="calories-text">Calories</span>
+					<input id="calories" class="calories-value" type="text" th:field="*{calories}" style="height:22.5px;width:65%;border:0;text-align:right;" readonly />
+				</div>
+				
+				<div style="position:absolute;top:43.5%;left:50%;transform: translateX(-50%);height: 1.5%; width: 94%; background: black; margin: auto;"></div>
+				
+				<span class="percent-macros">% Daily Macros*</span>
+				
+				<div style="position:absolute;top:50%;left:50%;transform: translateX(-50%);height: 0.25%; width: 94%; background: black; margin: auto;"></div>
+				
+				<div style="position: absolute;top: 50.5%;left: 3.25%;">
+					<table class="macro">
+						<tbody>
+							<tr>
+								<td class="macro-text macro-item" width="22.5%">Total Fat</td>
+								<td id="sel-fat" class="macro-value macro-item" width="69%"><input id="fat" type="text" th:field="*{fatGrams}" style="width:35%;text-align:center;">&nbsp;g</td>
+								<td id="fat-percent" class="macro-percent macro-item" width="8.5%">0%</td>
+							</tr>
+							<tr>
+								<td class="macro-text macro-item" width="50%">Total Carbohydrate</td>
+								<td id="sel-carbs" class="macro-value macro-item" width="10%"><input id="carbs" type="text" th:field="*{carbsGrams}" style="width:35%;text-align:center;">&nbsp;g</td>
+								<td id="carbs-percent" class="macro-percent macro-item" width="40%">0%</td>
+							</tr>
+							<tr>
+								<td class="macro-item" style="text-align:right; padding-right:22px;" width="50%">Dietary Fiber</td>
+								<td id="sel-fiber" class="macro-value macro-item" width="10%"><input id="fiber" type="text" th:field="*{fiberGrams}" style="width:35%;text-align:center;">&nbsp;g</td>
+								<td id="fiber-percent" class="macro-percent macro-item" width="40%" style="padding-right:5px;">N/A</td>
+							</tr>
+							<tr>
+								<td class="macro-text" width="50%">Protein</td>
+								<td id="sel-protein" class="macro-value" width="40%"><input id="protein" type="text" th:field="*{proteinGrams}" style="width:35%;text-align:center;">&nbsp;g</td>
+								<td id="protein-percent" class="macro-percent" width="10%">0%</td>
+							</tr>
+							<tr>
+								<td class="divider"></td>
+								<td class="divider"></td>
+								<td class="divider"></td>
+							</tr>
+							<tr>
+								<td style="padding-top: 5px; font-size: 10px;" th:text="'*Calories: ' + ${#authentication.getPrincipal().getMacroPlan().getTargetCalories()} + ' | Carbs: ' + ${#authentication.getPrincipal().getMacroPlan().getCarbsGrams()} + 'g | Fat: ' + ${#authentication.getPrincipal().getMacroPlan().getFatGrams()} + 'g | Protein: ' + ${#authentication.getPrincipal().getMacroPlan().getProteinGrams()} + 'g'" colspan="3"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="horizontal-center" style="margin-top:1.5%">
+				<input type="submit" value="Submit" />
+			</div>
+		</form>
+		
+		<script type="text/javascript">
+			Number.prototype.countDecimals = function () {
+			    if(Math.floor(this.valueOf()) === this.valueOf()) return 0;
+			    return this.toString().split(".")[1].length || 0; 
+			}
+			
+			var currentCalories = $("#calories").val();
+			var currentCarbs = $("#carbs").val();
+			var currentFat = $("#fat").val();
+			var currentProtein = $("#protein").val();
+			
+			var goalCarbs = $("#goal-carbs").val();
+			var goalFat = $("#goal-fat").val();
+			var goalProtein = $("#goal-protein").val();
+			
+		  	$("#fat-percent").text(((currentFat / goalFat)*100).toFixed(1) + "%");
+		  	$("#carbs-percent").text(((currentCarbs / goalCarbs)*100).toFixed(1) + "%");
+		  	$("#protein-percent").text(((currentProtein / goalProtein)*100).toFixed(1) + "%");
+			
+			console.log(currentCalories);
+			console.log(currentCarbs);
+			console.log(currentFat);
+			console.log(currentProtein);
+			
+			$("#carbs").on("input", function() {
+				if($.isNumeric($(this).val()) && $(this).val() >= 0.0) {
+					var diff = $(this).val() - currentCarbs;
+					diff = diff.countDecimals() <= 1 ? diff.toFixed(1) : diff.toFixed(2);
+					console.log(diff);
+					
+					if(diff != 0.0) {
+						var val = parseFloat(currentCalories) + parseFloat(diff * 4.0);
+						currentCalories = val.countDecimals() <= 1 ? val.toFixed(1) : val.toFixed(2);
+						currentCarbs = $(this).val();
+						$("#calories").val(currentCalories);
+						$("#carbs").val(currentCarbs);
+						$("#carbs-percent").text(((currentCarbs / goalCarbs)*100).toFixed(1) + "%");
+					}
+				} else {
+					console.log("invalid");
+				}
+			});
+		    
+		    $('#carbs').focus(function() {
+		    }).blur(function() {
+		        if(!($.isNumeric($(this).val()) && $(this).val() >= 0.0)) {
+		        	//alert("Invalid quantity value");
+		        	$('#carbs').val(currentCarbs);
+		        	$('#carbs').trigger("input");
+		        }
+		    });	
+		    
+			$("#protein").on("input", function() {
+				if($.isNumeric($(this).val()) && $(this).val() >= 0.0) {
+					var diff = $(this).val() - currentProtein;
+					diff = diff.countDecimals() <= 1 ? diff.toFixed(1) : diff.toFixed(2);
+					console.log(diff);
+					
+					if(diff != 0.0) {
+						var val = parseFloat(currentCalories) + parseFloat(diff * 4.0);
+						currentCalories = val.countDecimals() <= 1 ? val.toFixed(1) : val.toFixed(2);
+						currentProtein = $(this).val();
+						$("#calories").val(currentCalories);
+						$("#protein").val(currentProtein);
+						$("#protein-percent").text(((currentProtein / goalProtein)*100).toFixed(1) + "%");
+					}
+				} else {
+					console.log("invalid");
+				}
+			});
+		    
+		    $('#protein').focus(function() {
+		    }).blur(function() {
+		        if(!($.isNumeric($(this).val()) && $(this).val() >= 0.0)) {
+		        	//alert("Invalid quantity value");
+		        	$('#protein').val(currentProtein);
+		        	$('#protein').trigger("input");
+		        }
+		    });
+
+			$("#fat").on("input", function() {
+				if($.isNumeric($(this).val()) && $(this).val() >= 0.0) {
+					var diff = $(this).val() - currentFat;
+					diff = diff.countDecimals() <= 1 ? diff.toFixed(1) : diff.toFixed(2);
+					console.log(diff);
+					
+					if(diff != 0.0) {
+						var val = parseFloat(currentCalories) + parseFloat(diff * 9.0);
+						currentCalories = val.countDecimals() <= 1 ? val.toFixed(1) : val.toFixed(2);
+						currentFat = $(this).val();
+						$("#calories").val(currentCalories);
+						$("#fat").val(currentFat);
+						$("#fat-percent").text(((currentFat / goalFat)*100).toFixed(1) + "%");
+					}
+				} else {
+					console.log("invalid");
+				}
+			});
+		    
+		    $('#fat').focus(function() {
+		    }).blur(function() {
+		        if(!($.isNumeric($(this).val()) && $(this).val() >= 0.0)) {
+		        	//alert("Invalid quantity value");
+		        	$('#fat').val(currentFat);
+		        	$('#fat').trigger("input");
+		        }
+		    });
+		</script>
+</body>
+</html>

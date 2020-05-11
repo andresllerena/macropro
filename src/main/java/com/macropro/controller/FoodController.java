@@ -24,6 +24,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -113,6 +114,84 @@ public class FoodController {
 		}
 
 		return "diary";
+	}
+	
+	@RequestMapping(value = "/edit/{id}", method = { RequestMethod.GET } )
+	public String showEditFood(@PathVariable("id") int id,
+								RedirectAttributes attr,					
+								Model m) {
+		try {
+			Food f = foodService.getFood(id);
+			m.addAttribute("food", f);
+		}
+		catch(Exception e) {
+			logger.error("Error retrieving food (with id = " + id + ")");
+			logger.error(e.toString());
+			logger.error(e.getCause().getMessage());
+			return "redirect:/food/my-foods";
+		}
+
+		return "edit-food";
+	}
+	
+	@RequestMapping(value="/edit", method=RequestMethod.POST)
+	public String editFood(@Valid @ModelAttribute("food") Food food,
+			BindingResult br,
+			RedirectAttributes attr,
+			Model m) {
+		logger.info("Food: " + food.toString());
+		
+		if (br.hasErrors()) {
+			logger.error("Error with food validation");
+			logger.error(br.toString());
+		    attr.addFlashAttribute("error", "Invalid value(s). Please try again.");
+			return "redirect:/food/edit/" + food.getId();
+		} else {
+			User updatedUser;
+			
+			try {
+				updatedUser = foodService.updateFood(food, currentUser);
+			} catch (Exception e) {
+				logger.error("Unable to update food");
+				logger.error(e.getMessage());
+				logger.error(e.getCause().getMessage());
+			    attr.addFlashAttribute("error", "Error updating food. Please try again.");
+				return "redirect:/food/edit/" + food.getId();
+			}
+			
+			if (updatedUser != null) {
+				Authentication authentication = new PreAuthenticatedAuthenticationToken(updatedUser,
+						updatedUser.getPassword(), updatedUser.getAuthorities());
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+			}
+		}
+		
+		return "redirect:/food/my-foods";
+	}
+	
+	
+	@RequestMapping(value = "/delete/{id}", method = { RequestMethod.GET, RequestMethod.POST })
+	public String deleteFood(@PathVariable("id") int id,
+								RedirectAttributes attr,					
+								Model m) {
+		User u;
+		
+		try {
+			u = foodService.deleteFood(id);
+		}
+		catch(Exception e) {
+			logger.error("Error deleting food (with id = " + id + ")");
+			logger.error(e.toString());
+			logger.error(e.getCause().getMessage());
+			return "redirect:/food/my-foods";
+		}
+
+		Authentication authentication = new PreAuthenticatedAuthenticationToken(u,
+				u.getPassword(), u.getAuthorities());
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		
+		attr.addFlashAttribute("deleted", "Food has been deleted");
+		return "redirect:/food/my-foods";
 	}
 	
 	@GetMapping("/diary/add")
